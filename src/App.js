@@ -8,26 +8,37 @@ function App() {
   const [hour, setHour] = useState(0);
 
   const [startTime, setStartTime] = useState(null);
+  const [counter, setCounter] = useState(null);
 
   function count() {
-    setInterval(() => {
+    const _counter = setInterval(() => {
       let now = new Date();
       const passedSeconds = now.getSeconds() - startTime.getSeconds();
-      setSecond(passedSeconds >= 0 ? passedSeconds : passedSeconds + 60);
+      setSecond(second + (passedSeconds >= 0 ? passedSeconds : passedSeconds + 60));
 
       if (passedSeconds === 0) {
         const passedMinutes = now.getMinutes() - startTime.getMinutes();
-        setMinute(passedMinutes >= 0 ? passedMinutes : passedMinutes + 60);
+        setMinute(minute + (passedMinutes >= 0 ? passedMinutes : passedMinutes + 60));
 
         if (passedMinutes === 0) {
           const passedHours = now.getHours() - startTime.getHours();
-          setHour(passedHours);
+          setHour(hour + passedHours);
         }
       }
     }, 1000);
+    setCounter(_counter);
   }
 
   function start() {
+    setStartTime(new Date());
+  }
+
+  function pause() {
+    clearInterval(counter);
+    setCounter(null);
+  }
+
+  function resume() {
     setStartTime(new Date());
   }
 
@@ -40,7 +51,9 @@ function App() {
     <div className='stopwatch'>
       {hour}:{minute}:{second}
       <div>
-        {!startTime && <button onClick={start}>Start</button>}
+        {!startTime && !counter && <button onClick={start}>Start</button>}
+        {!!startTime && !counter && <button onClick={resume}>resume</button>}
+        {!!startTime && !!counter && <button onClick={pause}>Pause</button>}
       </div>
     </div>
   );
