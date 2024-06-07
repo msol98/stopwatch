@@ -9,6 +9,7 @@ function App() {
 
   const [startTime, setStartTime] = useState(null);
   const [counter, setCounter] = useState(null);
+  const [records, setRecords] = useState([]);
 
   function count() {
     const _counter = setInterval(() => {
@@ -42,6 +43,19 @@ function App() {
     setStartTime(new Date());
   }
 
+  function lap() {
+    const newRec = hour + ':' + minute + ':' + second;
+    setRecords(recs => [...recs, newRec]);
+  }
+
+  function reset() {
+    setSecond(0);
+    setMinute(0);
+    setHour(0);
+    setStartTime(null);
+    setCounter(null);
+  }
+
   useEffect(() => {
     if (!!startTime)
       count();
@@ -49,11 +63,18 @@ function App() {
 
   return (
     <div className='stopwatch'>
-      {hour}:{minute}:{second}
+      <div>
+        {hour}:{minute}:{second}
+      </div>
       <div>
         {!startTime && !counter && <button onClick={start}>Start</button>}
         {!!startTime && !counter && <button onClick={resume}>resume</button>}
+        {!!startTime && !counter && <button onClick={reset}>Reset</button>}
         {!!startTime && !!counter && <button onClick={pause}>Pause</button>}
+        {!!startTime && !!counter && <button onClick={lap}>Lap</button>}
+      </div>
+      <div className='records'>
+        {records.map(record => <p>{record}</p>)}
       </div>
     </div>
   );
