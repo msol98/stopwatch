@@ -54,6 +54,7 @@ function App() {
     setHour(0);
     setStartTime(null);
     setCounter(null);
+    setRecords([]);
   }
 
   useEffect(() => {
