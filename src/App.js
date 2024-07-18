@@ -62,12 +62,12 @@ function App() {
   }, [startTime]);
 
   return (
-    <div className='stopwatch'>
+    <div className='stopwatch flex items-center justify-center'>
       <div>
         {hour}:{minute}:{second}
       </div>
-      <div>
-        {!startTime && !counter && <button onClick={start}>Start</button>}
+      <div className='gap-4'>
+        {!startTime && !counter && <button className='button' onClick={start}>Start</button>}
         {!!startTime && !counter && <button onClick={resume}>resume</button>}
         {!!startTime && !counter && <button onClick={reset}>Reset</button>}
         {!!startTime && !!counter && <button onClick={pause}>Pause</button>}
