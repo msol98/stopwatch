@@ -2,7 +2,7 @@ export const start = () => ({
   type: 'START'
 });
 
-export const puse = () => ({
+export const pause = () => ({
   type: 'PAUSE'
 });
 
@@ -14,6 +14,7 @@ export const reset = () => ({
   type: 'RESET'
 });
 
-export const lap = () => ({
-  type: 'LAP'
+export const lap = (newRecord) => ({
+  type: 'LAP',
+  newRecord
 });
