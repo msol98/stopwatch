@@ -1,84 +1,97 @@
 import { useEffect, useState } from 'react';
 import './App.css';
+import { connect } from 'react-redux';
+import { resume, start, pause, lap, reset } from './actions/stopwatch';
 
-function App() {
+function App({ dispatch, _startTime, _records }) {
 
-  const [second, setSecond] = useState(0);
-  const [minute, setMinute] = useState(0);
-  const [hour, setHour] = useState(0);
-
-  const [startTime, setStartTime] = useState(null);
+  const [second, setSecond] = useState(null);
+  const [minute, setMinute] = useState(null);
+  const [hour, setHour] = useState(null);
   const [counter, setCounter] = useState(null);
-  const [records, setRecords] = useState([]);
 
-  function count() {
-    const _counter = setInterval(() => {
-      let now = new Date();
-      const passedSeconds = now.getSeconds() - startTime.getSeconds();
-      setSecond(second + (passedSeconds >= 0 ? passedSeconds : passedSeconds + 60));
-
-      if (passedSeconds === 0) {
-        const passedMinutes = now.getMinutes() - startTime.getMinutes();
-        setMinute(minute + (passedMinutes >= 0 ? passedMinutes : passedMinutes + 60));
-
-        if (passedMinutes === 0) {
-          const passedHours = now.getHours() - startTime.getHours();
-          setHour(hour + passedHours);
-        }
-      }
-    }, 1000);
+  function startCounter() {
+    const _counter = setInterval(count, 1000);
     setCounter(_counter);
   }
 
-  function start() {
-    setStartTime(new Date());
-  }
-
-  function pause() {
+  function stopCounter() {
     clearInterval(counter);
     setCounter(null);
   }
 
-  function resume() {
-    setStartTime(new Date());
+  function count() {
+    let now = new Date();
+    var _second, _minute, _hour;
+    const passedSeconds = now.getSeconds() - _startTime.getSeconds();
+    _second = (second + (passedSeconds >= 0 ? passedSeconds : passedSeconds + 60));
+    setSecond(_second);
+
+    if (passedSeconds === 0) {
+      const passedMinutes = now.getMinutes() - _startTime.getMinutes();
+      _minute = (minute + (passedMinutes >= 0 ? passedMinutes : passedMinutes + 60));
+      setMinute(_minute);
+
+      if (passedMinutes === 0) {
+        const passedHours = now.getHours() - _startTime.getHours();
+        _hour = (hour + passedHours);
+        setHour(_hour);
+      }
+    }
   }
 
-  function lap() {
-    const newRec = hour + ':' + minute + ':' + second;
-    setRecords(recs => [...recs, newRec]);
+  function handleReset() {
+    setHour(null);
+    setMinute(null);
+    setSecond(null);
+    dispatch(reset());
   }
 
-  function reset() {
-    setSecond(0);
-    setMinute(0);
-    setHour(0);
-    setStartTime(null);
+  function handlePause() {
+    clearInterval(counter);
     setCounter(null);
-    setRecords([]);
+    dispatch(pause());
+  }
+
+  function handleLap() {
+    const newRec = (hour || '00') + ':' + (minute || '00') + ':' + (second || '00');
+    dispatch(lap(newRec));
   }
 
   useEffect(() => {
-    if (!!startTime)
-      count();
-  }, [startTime]);
+    if (!!_startTime)
+      startCounter();
+    else
+      stopCounter();
+  }, [_startTime]);
 
   return (
-    <div className='stopwatch flex items-center justify-center'>
-      <div>
-        {hour}:{minute}:{second}
-      </div>
-      <div className='gap-4'>
-        {!startTime && !counter && <button className='button' onClick={start}>Start</button>}
-        {!!startTime && !counter && <button onClick={resume}>resume</button>}
-        {!!startTime && !counter && <button onClick={reset}>Reset</button>}
-        {!!startTime && !!counter && <button onClick={pause}>Pause</button>}
-        {!!startTime && !!counter && <button onClick={lap}>Lap</button>}
+    <>
+      <div className='stopwatch flex items-center rounded-full justify-center'>
+        <div>
+          {hour || '00'}:{minute || '00'}:{second || '00'}
+        </div>
+        <div className='gap-4'>
+          {!_startTime && !(second || minute || hour) && <button onClick={() => dispatch(start())}>Start</button>}
+          {!_startTime && (second || minute || hour) && <button onClick={() => dispatch(resume())}>resume</button>}
+          {!!_startTime && <button onClick={handlePause}>Pause</button>}
+          {!!_startTime && <button onClick={handleLap}>Lap</button>}
+          <button onClick={handleReset}>Reset</button>
+        </div>
+
       </div>
       <div className='records'>
-        {records.map(record => <p>{record}</p>)}
+        {_records && _records.map(record => <p key={record}>{record}</p>)}
       </div>
-    </div>
+    </>
   );
 }
 
-export default App;
+const mapStateToProps = (state = { startTime: null }) => {
+  return {
+    _startTime: state.startTime,
+    _records: state.records
+  }
+}
+
+export default connect(mapStateToProps)(App);
