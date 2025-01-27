@@ -2,14 +2,38 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  font-family: monospace;
+  background-color: #daadff;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
 .stopwatch {
   flex-direction: column;
-  font-size: 40px;
-  height: 80vh;
-  font-family: monospace;
+  font-size: 70px;
+  background: #efdcff;
+  margin: 30vh auto auto;
 }
 
 .records {
   font-size: 20px;
-  margin: 7px 0;
+  text-align: center;
+  margin-top: 30px;
+}
+
+.stopwatch button {
+  margin: 0 10px;
+  border-radius: 10px;
+  padding: 6px 15px;
+  font-size: 26px;
+  background-color: #d29bff;
+}
+
+.stopwatch button:active,
+.stopwatch button:hover {
+  background-color: #c175ff;
 }
